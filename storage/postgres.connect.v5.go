@@ -35,6 +35,7 @@ func (c *Config) checkRecovery() (bool, error) {
 	return read, nil
 }
 
+// GetAutoConn - Deprecate. See method ReliableConn.
 func (c *Config) GetAutoConn(ctx context.Context) (*pgxpool.Pool, error) {
 	master, err := c.checkRecovery()
 	if err != nil {
@@ -43,6 +44,31 @@ func (c *Config) GetAutoConn(ctx context.Context) (*pgxpool.Pool, error) {
 	if master {
 		return c.Conn(ctx, "master")
 	}
+
+	return c.Conn(ctx, "")
+}
+
+// ReliableConn - with a read-only transaction check. Return pgx pool connect master or replica.
+func (c *Config) ReliableConn(ctx context.Context) (*pgxpool.Pool, error) {
+	master, err := c.checkRecovery()
+	if err != nil {
+		slog.Error(err.Error(), slog.String("checkRecovery", "GetAutoConn"))
+	}
+	if master {
+		return c.Conn(ctx, "master")
+	}
+
+	return c.Conn(ctx, "")
+}
+
+// MasterConn - without a read-only transaction check. Return pgx pool connect master.
+func (c *Config) MasterConn(ctx context.Context) (*pgxpool.Pool, error) {
+
+	return c.Conn(ctx, "master")
+}
+
+// ReplicaConn - without a read-only transaction check. Return pgx pool connect replica.
+func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
 
 	return c.Conn(ctx, "")
 }
