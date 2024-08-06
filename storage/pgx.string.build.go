@@ -21,7 +21,7 @@ func (c *Config) options() string {
 }
 
 func (c *Config) hostSelect(host string) string {
-	str := fmt.Sprintf("user=%s password=%s dbname=%s", c.User, c.Password, c.DbName)
+	str := fmt.Sprintf("user=%s password=%s dbname=%s %s", c.User, c.Password, c.DbName, c.options())
 
 	switch host {
 	case "master":
