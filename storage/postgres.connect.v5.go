@@ -21,7 +21,7 @@ func (c *Config) checkRecovery() (bool, error) {
 	defer cancel()
 	var read bool
 
-	master, err := c.Conn(ctx, "master")
+	master, err := pgxpool.New(ctx, c.hostSelect("master"))
 	if err != nil {
 		return read, err
 	}
@@ -46,20 +46,20 @@ func (c *Config) GetAutoConn(ctx context.Context) (*pgxpool.Pool, error) {
 		return c.Conn(ctx, "master")
 	}
 
-	return c.Conn(ctx, "")
+	return c.Conn(ctx, "replica")
 }
 
 // ReliableConn - with a read-only transaction check. Return pgx pool connect master or replica.
 func (c *Config) ReliableConn(ctx context.Context) (*pgxpool.Pool, error) {
 	master, err := c.checkRecovery()
 	if err != nil {
-		slog.Error(err.Error(), slog.String("checkRecovery", "GetAutoConn"))
+		slog.Error(err.Error(), slog.String("checkRecovery", "ReliableConn"))
 	}
 	if master {
 		return c.Conn(ctx, "master")
 	}
 
-	return c.Conn(ctx, "")
+	return c.Conn(ctx, "replica")
 }
 
 // MasterConn - without a read-only transaction check. Return pgx pool connect master.
@@ -76,8 +76,9 @@ func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
 
 // New - new connect to data base with sql query sample.
 func (c *Connection) New() (*Query, error) {
-
-	db, err := c.StorageConfig.ReliableConn(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Timeout)*time.Second)
+	defer cancel()
+	db, err := c.StorageConfig.ReliableConn(ctx)
 	if err != nil {
 		return nil, err
 	}
