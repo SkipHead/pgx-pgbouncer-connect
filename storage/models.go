@@ -1,5 +1,10 @@
 package storage
 
+import (
+	"github.com/jackc/pgx/v5/pgxpool"
+	"time"
+)
+
 type Config struct {
 	User                 string `json:"user"`
 	Password             string `json:"password"`
@@ -12,4 +17,25 @@ type Config struct {
 	ReplicaPort          string `json:"replica_port,omitempty"`
 	DefaultQueryExecMode string `json:"default_query_exec_mode,omitempty"`
 	Schema               string `json:"schema"`
+}
+
+type Query struct {
+	Table        string
+	KeyField     string
+	PageSize     string
+	PageIndex    string
+	Columns      []string
+	Pool         *pgxpool.Pool
+	StartDate    time.Time
+	EndTime      time.Time
+	AfterMinutes int
+	Timeout      int
+}
+
+type Connection struct {
+	Columns       []string
+	StorageConfig *Config
+	Schema        string
+	TableName     string
+	Timeout       int
 }

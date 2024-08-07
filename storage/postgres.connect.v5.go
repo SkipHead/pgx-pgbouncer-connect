@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/exp/slog"
 	"time"
@@ -71,4 +72,23 @@ func (c *Config) MasterConn(ctx context.Context) (*pgxpool.Pool, error) {
 func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
 
 	return c.Conn(ctx, "")
+}
+
+// New - new connect to data base with sql query sample.
+func (c *Connection) New() (*Query, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Timeout)*time.Second)
+	defer cancel()
+
+	db, err := c.StorageConfig.ReliableConn(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Query{
+		Table:    fmt.Sprintf("%s.%s", c.Schema, c.TableName),
+		KeyField: c.Columns[0],
+		Columns:  c.Columns,
+		Pool:     db,
+		Timeout:  c.Timeout,
+	}, nil
 }

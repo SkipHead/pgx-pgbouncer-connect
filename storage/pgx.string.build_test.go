@@ -28,7 +28,7 @@ func TestOptions(t *testing.T) {
 
 func TestHostSelect(t *testing.T) {
 	god := config().hostSelect(config().MasterHost)
-	wand := "user=test password=test dbname=test host=master port=6544"
+	wand := "user=test password=test dbname=test default_query_exec_mode=cache_describe host=master port=6544"
 	if god != wand {
 		t.Errorf("Result was incorrect, got: %s, want: %s.", god, wand)
 	}

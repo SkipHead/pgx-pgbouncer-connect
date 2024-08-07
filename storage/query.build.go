@@ -1,23 +1,10 @@
-package query
+package storage
 
 import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 )
-
-type Query struct {
-	Table        string
-	KeyField     string
-	PageSize     string
-	PageIndex    string
-	Columns      []string
-	StartDate    time.Time
-	EndTime      time.Time
-	AfterMinutes int
-	Timeout      int
-}
 
 // SelectAllColumns - Return string "SELECT * FROM <table>".
 func (q *Query) SelectAllColumns() string {
