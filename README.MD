@@ -4,7 +4,7 @@ For reliable connection of your postgresql cluster.
 
 ## Install
 
-```go get github.com/SkipHead/pgx-pgbouncer-connect```
+``` go get github.com/SkipHead/pgx-pgbouncer-connect ```
 
 ## Example Usage
 
