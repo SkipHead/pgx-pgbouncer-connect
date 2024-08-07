@@ -76,10 +76,8 @@ func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
 
 // New - new connect to data base with sql query sample.
 func (c *Connection) New() (*Query, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Timeout)*time.Second)
-	defer cancel()
 
-	db, err := c.StorageConfig.ReliableConn(ctx)
+	db, err := c.StorageConfig.ReliableConn(context.Background())
 	if err != nil {
 		return nil, err
 	}
