@@ -41,7 +41,6 @@ func main() {
 		StorageConfig: &config,
 		Schema:        "my_schema",
 		TableName:     "table",
-		Timeout:       15,
 	}
 
 	//Migrate table to db
