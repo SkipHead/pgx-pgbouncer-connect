@@ -19,28 +19,32 @@ func gooseErrors(e error, value string) {
 	}
 }
 
-func (m *Migration) Action(action string) {
-
+func (m *Migration) Up() {
 	sql, err := goose.OpenDBWithDriver(m.Driver, m.DBString)
 	gooseErrors(err, "goose.OpenDBWithDriver")
 
-	switch action {
-	case "up":
-		gooseErrors(goose.Up(sql, m.DirString), "goose.Up")
-	case "down":
-		gooseErrors(goose.Down(sql, m.DirString), "goose.Up")
-	}
+	gooseErrors(goose.Up(sql, m.DirString), "goose.Up")
+}
+
+func (m *Migration) Down() {
+	sql, err := goose.OpenDBWithDriver(m.Driver, m.DBString)
+	gooseErrors(err, "goose.OpenDBWithDriver")
+
+	gooseErrors(goose.Down(sql, m.DirString), "goose.Down")
 }
 
 func (c *Config) Migrate(path string) *Migration {
 	var dbString string
+
 	master, err := c.checkRecovery()
 	if err != nil {
 		gooseErrors(err, "checkRecovery")
 	}
-	dbString = c.hostSelect("master")
 
-	if master {
+	switch master {
+	case true:
+		dbString = c.hostSelect("master")
+	case false:
 		dbString = c.hostSelect("replica")
 	}
 
