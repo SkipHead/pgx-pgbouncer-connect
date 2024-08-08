@@ -31,7 +31,7 @@ func main() {
 		DbName:      "my_db",
 		MasterHost:  "192.168.0.1",
 		MasterPort:  "6544",
-		ReplicaHost: "192.168.0.2r",
+		ReplicaHost: "192.168.0.2",
 		ReplicaPort: "6544",
 		Schema:      "db_schema",
 	}

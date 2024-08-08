@@ -8,17 +8,19 @@ import (
 	"time"
 )
 
-func (c *Config) Conn(ctx context.Context, host string) (*pgxpool.Pool, error) {
-	if host == "" {
-		host = "replica"
-	}
+// MasterConn - without a read-only transaction check. Return pgx pool connect master.
+func (c *Config) MasterConn(ctx context.Context) (*pgxpool.Pool, error) {
 
-	return pgxpool.New(ctx, c.hostSelect(host))
+	return pgxpool.New(ctx, c.hostSelect("master"))
 }
 
-func (c *Config) checkRecovery() (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+// ReplicaConn - without a read-only transaction check. Return pgx pool connect replica.
+func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
+
+	return pgxpool.New(ctx, c.hostSelect("replica"))
+}
+
+func (c *Config) checkRecovery(ctx context.Context) (bool, error) {
 	var read bool
 
 	master, err := pgxpool.New(ctx, c.hostSelect("master"))
@@ -38,56 +40,51 @@ func (c *Config) checkRecovery() (bool, error) {
 
 // GetAutoConn - Deprecate. See method ReliableConn.
 func (c *Config) GetAutoConn(ctx context.Context) (*pgxpool.Pool, error) {
-	master, err := c.checkRecovery()
+
+	master, err := c.checkRecovery(ctx)
 	if err != nil {
 		slog.Error(err.Error(), slog.String("checkRecovery", "GetAutoConn"))
 	}
 	if master {
-		return c.Conn(ctx, "master")
+		return c.MasterConn(ctx)
 	}
 
-	return c.Conn(ctx, "replica")
+	return c.ReplicaConn(ctx)
 }
 
 // ReliableConn - with a read-only transaction check. Return pgx pool connect master or replica.
 func (c *Config) ReliableConn(ctx context.Context) (*pgxpool.Pool, error) {
-	master, err := c.checkRecovery()
+
+	master, err := c.checkRecovery(ctx)
 	if err != nil {
 		slog.Error(err.Error(), slog.String("checkRecovery", "ReliableConn"))
 	}
 	if master {
-		return c.Conn(ctx, "master")
+		return c.MasterConn(ctx)
 	}
 
-	return c.Conn(ctx, "replica")
-}
-
-// MasterConn - without a read-only transaction check. Return pgx pool connect master.
-func (c *Config) MasterConn(ctx context.Context) (*pgxpool.Pool, error) {
-
-	return c.Conn(ctx, "master")
-}
-
-// ReplicaConn - without a read-only transaction check. Return pgx pool connect replica.
-func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
-
-	return c.Conn(ctx, "")
+	return c.ReplicaConn(ctx)
 }
 
 // New - new connect to data base with sql query sample.
-func (c *Connection) New() (*ORM, error) {
+func (c *Connection) New() (*Orm, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Timeout)*time.Second)
 	defer cancel()
-	db, err := c.StorageConfig.ReliableConn(ctx)
+
+	reliableConn, err := c.StorageConfig.ReliableConn(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &ORM{
+	if c.Timeout == 0 {
+		c.Timeout = 15
+	}
+
+	return &Orm{
 		Table:    fmt.Sprintf("%s.%s", c.Schema, c.TableName),
 		KeyField: c.Columns[0],
 		Columns:  c.Columns,
-		Pool:     db,
+		Pool:     reliableConn,
 		Timeout:  c.Timeout,
 	}, nil
 }

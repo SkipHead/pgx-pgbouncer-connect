@@ -1,10 +1,12 @@
 package storage
 
 import (
+	"context"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 	"log/slog"
 	"os"
+	"time"
 )
 
 type Migration struct {
@@ -39,7 +41,10 @@ func (m *Migration) Down() {
 func (c *Config) Migrate(path string) *Migration {
 	var dbString string
 
-	master, err := c.checkRecovery()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	master, err := c.checkRecovery(ctx)
 	if err != nil {
 		gooseErrors(err, "checkRecovery")
 	}

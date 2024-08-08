@@ -19,7 +19,7 @@ type Config struct {
 	Schema               string `json:"schema"`
 }
 
-type ORM struct {
+type Orm struct {
 	Table        string
 	KeyField     string
 	PageSize     string
