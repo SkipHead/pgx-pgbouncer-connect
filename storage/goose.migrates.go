@@ -23,14 +23,16 @@ func (m *Migration) Up() {
 	sql, err := goose.OpenDBWithDriver(m.Driver, m.DBString)
 	gooseErrors(err, "goose.OpenDBWithDriver")
 
-	gooseErrors(goose.Up(sql, m.DirString), "goose.Up")
+	err = goose.Up(sql, m.DirString)
+	gooseErrors(err, "goose.Up")
 }
 
 func (m *Migration) Down() {
 	sql, err := goose.OpenDBWithDriver(m.Driver, m.DBString)
 	gooseErrors(err, "goose.OpenDBWithDriver")
 
-	gooseErrors(goose.Down(sql, m.DirString), "goose.Down")
+	err = goose.Down(sql, m.DirString)
+	gooseErrors(err, "goose.Down")
 }
 
 func (c *Config) Migrate(path string) *Migration {
@@ -43,9 +45,9 @@ func (c *Config) Migrate(path string) *Migration {
 
 	switch master {
 	case true:
-		dbString = c.hostSelect("master")
-	case false:
 		dbString = c.hostSelect("replica")
+	case false:
+		dbString = c.hostSelect("master")
 	}
 
 	return &Migration{
