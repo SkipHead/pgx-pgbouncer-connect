@@ -18,7 +18,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/SkipHead/pgx-pgbouncer-connect/storage"
+	"github.com/skiphead/pgx-pgbouncer-connect/storage"
 	"log"
 )
 
