@@ -1,6 +1,5 @@
-# PGX-PGBOUNCER-CONNECT
+# PGX-PGBOUNCER-CONNECT -  Is an add-on to the pgx driver.
 
-pgx-pgbouncer-connect is an add-on to the pgx driver. 
 It allows you to make an automatic choice between two nodes in a PostgreSQL cluster, 
 which is always necessary in high availability systems.
 It also combines database migration using the goose tool, 
