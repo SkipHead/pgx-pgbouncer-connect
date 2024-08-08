@@ -1,4 +1,4 @@
-# PGX-PGBOUNCER-CONNECT -  Is an add-on to the pgx driver.
+# PGX-PGBOUNCER-CONNECT -  add-on for pgx driver.
 
 It allows you to make an automatic choice between two nodes in a PostgreSQL cluster, 
 which is always necessary in high availability systems.
