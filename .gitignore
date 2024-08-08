@@ -1,4 +1,2 @@
 .gitignore
 .idea
-go.mod
-go.sum
