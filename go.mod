@@ -1,6 +1,6 @@
 module github.com/skiphead/pgx-pgbouncer-connect
 
-go 1.22.5
+go 1.22.2
 
 require (
 	github.com/jackc/pgx/v5 v5.6.0
@@ -15,7 +15,7 @@ require (
 	github.com/mfridman/interpolate v0.0.2 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.23.0 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
 )
