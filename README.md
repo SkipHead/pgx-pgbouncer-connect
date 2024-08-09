@@ -8,7 +8,7 @@ ORM functionality is added as needed, but raw queries are often used.
 
 ## Install
 
-``` go get github.com/SkipHead/pgx-pgbouncer-connect ```
+``` go get "github.com/skiphead/pgx-pgbouncer-connect```
 
 ## Example Usage
 
