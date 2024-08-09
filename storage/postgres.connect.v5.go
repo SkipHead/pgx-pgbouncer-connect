@@ -8,13 +8,13 @@ import (
 	"time"
 )
 
-// MasterConn - without a read-only transaction check. Return pgx pool connect master.
+// MasterConn connection without a "read-only transaction" check for master host database.
 func (c *Config) MasterConn(ctx context.Context) (*pgxpool.Pool, error) {
 
 	return pgxpool.New(ctx, c.hostSelect("master"))
 }
 
-// ReplicaConn - without a read-only transaction check. Return pgx pool connect replica.
+// ReplicaConn connection without a "read-only transaction" check for replica host database.
 func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
 
 	return pgxpool.New(ctx, c.hostSelect("replica"))
@@ -38,21 +38,7 @@ func (c *Config) checkRecovery(ctx context.Context) (bool, error) {
 	return read, nil
 }
 
-// GetAutoConn - Deprecate. See method ReliableConn.
-func (c *Config) GetAutoConn(ctx context.Context) (*pgxpool.Pool, error) {
-
-	master, err := c.checkRecovery(ctx)
-	if err != nil {
-		slog.Error(err.Error(), slog.String("checkRecovery", "GetAutoConn"))
-	}
-	if master {
-		return c.MasterConn(ctx)
-	}
-
-	return c.ReplicaConn(ctx)
-}
-
-// ReliableConn - with a read-only transaction check. Return pgx pool connect master or replica.
+// ReliableConn connection with a "read-only transaction" check. Returning master or replica pool connect.
 func (c *Config) ReliableConn(ctx context.Context) (*pgxpool.Pool, error) {
 
 	master, err := c.checkRecovery(ctx)
@@ -66,7 +52,7 @@ func (c *Config) ReliableConn(ctx context.Context) (*pgxpool.Pool, error) {
 	return c.ReplicaConn(ctx)
 }
 
-// New - new connect to data base with sql query sample.
+// New connection for operations on an ORM-style table, uses a reliable connection to the database.
 func (c *Connection) New() (*Orm, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(c.Timeout)*time.Second)
 	defer cancel()

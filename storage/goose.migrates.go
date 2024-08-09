@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Migration config for  database  new migration.
 type Migration struct {
 	Driver    string
 	DBString  string
@@ -22,6 +23,7 @@ func gooseErrors(e error, value string) {
 	}
 }
 
+// Up creating or modifying a table in the database.
 func (m *Migration) Up() {
 	sql, err := goose.OpenDBWithDriver(m.Driver, m.DBString)
 	gooseErrors(err, "goose.OpenDBWithDriver")
@@ -30,6 +32,7 @@ func (m *Migration) Up() {
 	gooseErrors(err, "goose.Up")
 }
 
+// Down performing drop operations.
 func (m *Migration) Down() {
 	sql, err := goose.OpenDBWithDriver(m.Driver, m.DBString)
 	gooseErrors(err, "goose.OpenDBWithDriver")
@@ -38,6 +41,7 @@ func (m *Migration) Down() {
 	gooseErrors(err, "goose.Down")
 }
 
+// Migrate creates a new configuration for database migration.
 func (c *Config) Migrate(path string) *Migration {
 	var dbString string
 

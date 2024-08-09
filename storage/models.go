@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Config PostgreSQL Database Connection Parameters.
 type Config struct {
 	User                 string `json:"user"`
 	Password             string `json:"password"`
@@ -19,6 +20,7 @@ type Config struct {
 	Schema               string `json:"schema"`
 }
 
+// Orm table parameters for ORM implementation
 type Orm struct {
 	Table        string
 	KeyField     string
@@ -32,6 +34,7 @@ type Orm struct {
 	Timeout      int
 }
 
+// Connection PostgreSQL connection parameters for performing ORM operations on a table.
 type Connection struct {
 	Columns       []string
 	StorageConfig *Config
