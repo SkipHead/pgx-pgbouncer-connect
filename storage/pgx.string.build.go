@@ -20,15 +20,14 @@ func (c *Config) options() string {
 	return options
 }
 
-func (c *Config) hostSelect(host string) string {
-	str := fmt.Sprintf("user=%s password=%s dbname=%s %s", c.User, c.Password, c.DbName, c.options())
+func (c *Config) master() string {
 
-	switch host {
-	case "master":
-		str = fmt.Sprintf("%s host=%s port=%s", str, c.MasterHost, c.MasterPort)
-	case "replica":
-		str = fmt.Sprintf("%s host=%s port=%s", str, c.ReplicaHost, c.ReplicaPort)
-	}
+	return fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s %s",
+		c.User, c.Password, c.DbName, c.MasterHost, c.MasterPort, c.options())
+}
 
-	return str
+func (c *Config) replica() string {
+
+	return fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s %s",
+		c.User, c.Password, c.DbName, c.ReplicaHost, c.ReplicaPort, c.options())
 }

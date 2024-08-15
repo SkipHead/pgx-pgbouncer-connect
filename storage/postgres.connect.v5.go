@@ -11,19 +11,19 @@ import (
 // MasterConn connection without a "read-only transaction" check for master host database.
 func (c *Config) MasterConn(ctx context.Context) (*pgxpool.Pool, error) {
 
-	return pgxpool.New(ctx, c.hostSelect("master"))
+	return pgxpool.New(ctx, c.master())
 }
 
 // ReplicaConn connection without a "read-only transaction" check for replica host database.
 func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
 
-	return pgxpool.New(ctx, c.hostSelect("replica"))
+	return pgxpool.New(ctx, c.replica())
 }
 
 func (c *Config) checkRecovery(ctx context.Context) (bool, error) {
 	var read bool
 
-	master, err := pgxpool.New(ctx, c.hostSelect("master"))
+	master, err := pgxpool.New(ctx, c.master())
 	if err != nil {
 		return read, err
 	}
