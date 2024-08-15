@@ -55,9 +55,9 @@ func (c *Config) Migrate(path string) *Migration {
 
 	switch master {
 	case true:
-		dbString = c.hostSelect("replica")
+		dbString = c.replica()
 	case false:
-		dbString = c.hostSelect("master")
+		dbString = c.master()
 	}
 
 	return &Migration{
