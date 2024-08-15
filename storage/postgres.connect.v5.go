@@ -45,7 +45,7 @@ func (c *Config) ReliableConn(ctx context.Context) (*pgxpool.Pool, error) {
 	if err != nil {
 		slog.Error(err.Error(), slog.String("checkRecovery", "ReliableConn"))
 	}
-	if master {
+	if !master {
 		return c.MasterConn(ctx)
 	}
 
