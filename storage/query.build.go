@@ -36,7 +36,7 @@ func (o *Orm) Insert() string {
 func (o *Orm) setUpdate() string {
 	var values []string
 	if len(o.Columns) > 0 {
-		for index, column := range o.Columns {
+		for index, column := range o.Columns[1:] {
 			values = append(values, fmt.Sprintf("%s=$%s", column, strconv.Itoa(index+2)))
 		}
 	}
