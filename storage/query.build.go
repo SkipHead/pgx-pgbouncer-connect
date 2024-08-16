@@ -47,7 +47,7 @@ func (o *Orm) setUpdate() string {
 // Update will create a raw query sql string "UPDATE SET <column=$1>, <column=$2> ...".
 func (o *Orm) Update() string {
 
-	return fmt.Sprintf("UPDATE %s SET %s WHERE %s", o.Table, o.setUpdate(), o.KeyField)
+	return fmt.Sprintf("UPDATE %s SET %s WHERE %s=$1", o.Table, o.setUpdate(), o.KeyField)
 }
 
 // OnConflictDoUpdate will create a raw query sql string "ON CONFLICT <id key> DO UPDATE SET <column=$1>, <column=$2> ..."
@@ -59,5 +59,5 @@ func (o *Orm) OnConflictDoUpdate() string {
 // Delete will create a raw query sql string DELETE FROM <table> WHERE <id>=KeyField.
 func (o *Orm) Delete() string {
 
-	return fmt.Sprintf("DELETE FROM %s WHERE %s", o.Table, o.KeyField)
+	return fmt.Sprintf("DELETE FROM %s WHERE %s=$1", o.Table, o.KeyField)
 }
