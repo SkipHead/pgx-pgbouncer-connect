@@ -67,7 +67,7 @@ func (c *Connection) New() (*Orm, error) {
 	}
 
 	return &Orm{
-		Table:    fmt.Sprintf("%s.%s", c.Schema, c.TableName),
+		Table:    fmt.Sprintf("%s.%s", c.StorageConfig.Schema, c.TableName),
 		KeyField: c.Columns[0],
 		Columns:  c.Columns,
 		Pool:     reliableConn,

@@ -38,7 +38,6 @@ type Orm struct {
 type Connection struct {
 	Columns       []string
 	StorageConfig *Config
-	Schema        string
 	TableName     string
 	Timeout       int
 }
