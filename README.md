@@ -38,7 +38,6 @@ func main() {
 	orm := storage.Connection{
 		Columns:       []string{"field1", "field2", "field3"},
 		StorageConfig: &config,
-		Schema:        "my_schema",
 		TableName:     "table",
 	}
 
