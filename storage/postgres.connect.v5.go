@@ -20,17 +20,19 @@ func (c *Config) ReplicaConn(ctx context.Context) (*pgxpool.Pool, error) {
 	return pgxpool.New(ctx, c.replica())
 }
 
-func (c *Config) checkRecovery(ctx context.Context) (bool, error) {
+func (c *Config) checkRecovery() (bool, error) {
 	var read bool
 
-	master, err := pgxpool.New(ctx, c.master())
+	master, err := pgxpool.New(context.Background(), c.master())
 	if err != nil {
 		return read, err
 	}
 	defer master.Close()
 
-	sql := "SELECT pg_is_in_recovery()"
-	err = master.QueryRow(ctx, sql).Scan(&read)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	err = master.QueryRow(ctx, "SELECT pg_is_in_recovery()").Scan(&read)
 	if err != nil {
 		return read, err
 	}
@@ -41,7 +43,7 @@ func (c *Config) checkRecovery(ctx context.Context) (bool, error) {
 // ReliableConn connection with a "read-only transaction" check. Returning master or replica pool connect.
 func (c *Config) ReliableConn(ctx context.Context) (*pgxpool.Pool, error) {
 
-	master, err := c.checkRecovery(ctx)
+	master, err := c.checkRecovery()
 	if err != nil {
 		slog.Error(err.Error(), slog.String("checkRecovery", "ReliableConn"))
 	}
